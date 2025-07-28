@@ -1,8 +1,8 @@
-# ALX Project Nexus 🚀
+# ALX Project Nexus
 
 Welcome to **ALX Project Nexus** - a comprehensive documentation hub showcasing my journey and learnings from the **ProDev Backend Engineering Program**. This repository serves as a central knowledge base for backend engineering concepts, tools, and best practices acquired throughout the program.
 
-## 🛍️ Capstone Project: E-Commerce Platform
+## Capstone Project: E-Commerce Platform
 
 As part of this program, I'm building a **full-featured e-commerce platform** that demonstrates real-world application of backend engineering principles:
 
