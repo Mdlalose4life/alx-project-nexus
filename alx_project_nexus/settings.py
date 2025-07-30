@@ -21,7 +21,8 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.gis',  # For location features
+     'django.contrib.postgres',
+     'django.contrib.gis',  # For location features
 ]
 
 THIRD_PARTY_APPS = [
