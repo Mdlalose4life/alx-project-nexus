@@ -1,18 +1,55 @@
 import os
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 
-# GDAL Configuration
-if os.name == 'nt':  # Windows
-    GDAL_LIBRARY_PATH = r'C:/OSGeo4W/bin/gdal311.dll'
-    GEOS_LIBRARY_PATH = r'C:/OSGeo4W/bin/geos_c.dll'
+# GDAL Configuration - MUST be done before any Django imports
+if os.name == 'nt':  
+    # Set the paths
+    gdal_dll_path = config('GDAL_LIBRARY_PATH', default=r'C:\OSGeo4W\bin\gdal311.dll')
+    geos_dll_path = config('GEOS_LIBRARY_PATH', default=r'C:\OSGeo4W\bin\geos_c.dll')
+    
+    # Add OSGeo4W to PATH first
+    osgeo_bin = r'C:\OSGeo4W\bin'
+    if osgeo_bin not in os.environ.get('PATH', ''):
+        os.environ['PATH'] = osgeo_bin + ';' + os.environ.get('PATH', '')
+    
+    # Set GDAL environment variables
+    os.environ['GDAL_DATA'] = r'C:\OSGeo4W\share\gdal'
+    os.environ['PROJ_LIB'] = r'C:\OSGeo4W\share\proj'
+    
+    # Import ctypes to verify DLL can be loaded
+    import ctypes
+    try:
+        # Try to load the GDAL DLL directly
+        gdal_lib = ctypes.CDLL(gdal_dll_path)
+        print(f"✓ GDAL library loaded successfully: {gdal_dll_path}")
+        
+        # Set the library path for Django
+        os.environ['GDAL_LIBRARY_PATH'] = gdal_dll_path
+        os.environ['GEOS_LIBRARY_PATH'] = geos_dll_path
+        
+    except OSError as e:
+        print(f"✗ Failed to load GDAL library: {e}")
+        print("Please check your GDAL installation path")
+        # Try alternative paths
+        alternative_paths = [
+            r'C:\OSGeo4W64\bin\gdal311.dll',
+            r'C:\Program Files\GDAL\gdal311.dll',
+        ]
+        for alt_path in alternative_paths:
+            if os.path.exists(alt_path):
+                print(f"Found alternative GDAL at: {alt_path}")
+                os.environ['GDAL_LIBRARY_PATH'] = alt_path
+                break
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me')
-
+if os.name == 'nt':
+    GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+    GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
+    
 # Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -21,8 +58,8 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-     'django.contrib.postgres',
-     'django.contrib.gis',  # For location features
+    'django.contrib.postgres',
+    'django.contrib.gis',
 ]
 
 THIRD_PARTY_APPS = [
@@ -37,7 +74,7 @@ LOCAL_APPS = [
     'apps.accounts',
     'apps.businesses',
     'apps.products',
-    'apps.orders', 
+    'apps.orders',
     'apps.locations',
     'apps.reviews',
 ]
@@ -73,18 +110,6 @@ TEMPLATES = [
     },
 ]
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': config('DB_NAME', default='alx_project_nexus_db'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='password'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
-    }
-}
-
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -112,7 +137,6 @@ REST_FRAMEWORK = {
 }
 
 # JWT Configuration
-from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -122,11 +146,11 @@ SIMPLE_JWT = {
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Africa/Johannesburg'  # South African timezone
+TIME_ZONE = 'Africa/Johannesburg'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
@@ -138,25 +162,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS settings (for Next.js integration)
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Next.js default
-    "http://127.0.0.1:3000",
-]
-
+# CORS settings
+CORS_ALLOWED_ORIGINS = []
 CORS_ALLOW_CREDENTIALS = True
-
-# Cache Configuration (Redis)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
-    }
-}
-
-# Celery Configuration
-CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://127.0.0.1:6379/0')
-CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://127.0.0.1:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'

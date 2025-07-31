@@ -140,3 +140,12 @@ class Business(models.Model):
             counter += 1
 
         return slug
+
+class BusinessImage(models.Model):
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='business_images/')
+    is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-is_primary', 'id']
