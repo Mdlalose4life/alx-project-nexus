@@ -10,6 +10,7 @@ class User(AbstractUser):
     )
     
     user_type = models.CharField(max_length=20, choices=USER_TYPES, default='customer')
+    email = models.EmailField(unique=True)
     phone_number = models.CharField(
         max_length=15,
         validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$')],
@@ -17,6 +18,7 @@ class User(AbstractUser):
         null=True,
         blank=True
     )
+    
     is_phone_verified = models.BooleanField(default=False)
     location = models.PointField(null=True, blank=True)
     preferred_language = models.CharField(max_length=10, default='en')

@@ -25,7 +25,7 @@ class Product(models.Model):
         ('out_of_stock', 'Out of Stock'),
     )
     
-    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='products')
+    business = models.ForeignKey('businesses.Business', on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=200)
     slug = models.SlugField()
     description = models.TextField()
