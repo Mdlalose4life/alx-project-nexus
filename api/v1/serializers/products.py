@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 from api.v1.serializers.businesses import BusinessListSerializer
 from apps.products.models import Product, ProductCategory, ProductImage
 
@@ -22,6 +23,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     primary_image = serializers.SerializerMethodField()
     discount_percentage = serializers.SerializerMethodField()
+    is_in_stock = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -32,6 +34,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'is_in_stock', 'created_at'
         ]
     
+    @extend_schema_field(serializers.URLField(allow_null=True))
     def get_primary_image(self, obj):
         primary_image = obj.images.filter(is_primary=True).first()
         if primary_image:
@@ -40,10 +43,22 @@ class ProductListSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(primary_image.image.url)
         return None
     
+    @extend_schema_field(serializers.IntegerField())
     def get_discount_percentage(self, obj):
         if obj.original_price and obj.original_price > obj.price:
             return round(((obj.original_price - obj.price) / obj.original_price) * 100)
         return 0
+    
+    @extend_schema_field(serializers.BooleanField())
+    def get_is_in_stock(self, obj):
+        # Check if the product has the is_in_stock property/method
+        if hasattr(obj, 'is_in_stock'):
+            return obj.is_in_stock
+        # Fallback to checking stock_quantity if available
+        if hasattr(obj, 'stock_quantity'):
+            return obj.stock_quantity > 0
+        # Default to True if no stock tracking
+        return True
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     """Full product details"""
@@ -68,6 +83,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'is_in_stock', 'is_low_stock', 'created_at', 'updated_at'
         ]
     
+    @extend_schema_field(serializers.IntegerField())
     def get_discount_percentage(self, obj):
         if obj.original_price and obj.original_price > obj.price:
             return round(((obj.original_price - obj.price) / obj.original_price) * 100)
@@ -96,4 +112,3 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             validated_data['business'] = self.context['request'].user.businesses.first()
         
         return super().create(validated_data)
-

@@ -10,14 +10,30 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-123')
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#         'NAME': config('DB_NAME', default='alx_project_nexus_dev'),
+#         'USER': config('DB_USER', default='postgres'),
+#         'PASSWORD': config('DB_PASSWORD', default='password'),
+#         'HOST': config('DB_HOST', default='localhost'),
+#         'PORT': config('DB_PORT', default='5432'),
+#     }
+# }
+
+# SUPABASE
 DATABASES = {
-    'default': {
+    'default': {  
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': config('DB_NAME', default='alx_project_nexus_dev'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='password'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+        'NAME': config('SUPABASE_DB_NAME', default='postgres'),
+        'USER': config('SUPABASE_USER', default='postgres.jrtgjsequyibngzzvfvy'),
+        'PASSWORD': config('SUPABASE_PASSWORD'), 
+        'HOST': config('SUPABASE_URL', default='aws-0-eu-west-2.pooler.supabase.com'),
+        'PORT': config('SUPABASE_PORT', default='5432'),
+        'OPTIONS': {
+            'sslmode': 'require',  # SSL is mandatory for Supabase
+            'options': '-c search_path=public'  
+        },
     }
 }
 

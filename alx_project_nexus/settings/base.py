@@ -50,6 +50,8 @@ if os.name == 'nt':
     GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
     GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
     
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this')    
+
 # Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -65,6 +67,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
     'corsheaders',
     'django_filters',
     'django_extensions',
@@ -134,7 +137,60 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_VERSION': 'v1',
     'ALLOWED_VERSIONS': ['v1', 'v2'],
+    
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
 }
+
+# Spectacular (Swagger/OpenAPI) Configuration
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Local Business Directory API',
+    'DESCRIPTION': 'A comprehensive API for managing local businesses, products, and user interactions in South African townships and communities.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/v1/',
+    
+    # # Authentication
+    # 'SECURITY_DEFINITIONS': {
+    #     'Bearer': {
+    #         'type': 'http',
+    #         'scheme': 'bearer',
+    #         'bearerFormat': 'JWT',
+    #     }
+    # },
+    
+    # UI Configuration
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': False,
+        'defaultModelsExpandDepth': 2,
+        'defaultModelExpandDepth': 2,
+        'displayRequestDuration': True,
+        'docExpansion': 'list',
+        'filter': True,
+    },
+    
+    # # Schema generation
+    # 'PREPROCESSING_HOOKS': [],
+    # 'POSTPROCESSING_HOOKS': [],
+    # 'ENUM_NAME_OVERRIDES': {
+    #     'ValidationErrorEnum': 'drf_spectacular.utils.ValidationErrorEnum.values',
+    # },
+    # 'ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE': False,
+    
+    # # Tags
+    # 'TAGS': [
+    #     {'name': 'Authentication', 'description': 'User authentication and account management'},
+    #     {'name': 'Users', 'description': 'User profile management'},
+    #     {'name': 'Businesses', 'description': 'Business listings and management'},
+    #     {'name': 'Business Categories', 'description': 'Business category management'},
+    #     {'name': 'Products', 'description': 'Product listings and management'},
+    #     {'name': 'Product Categories', 'description': 'Product category management'},
+    # ],
+}
+
 
 # JWT Configuration
 SIMPLE_JWT = {
@@ -142,7 +198,33 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    'JWK_URL': None,
+    'LEEWAY': 0,
+    
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+    
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+    
+    'JTI_CLAIM': 'jti',
+    
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
@@ -163,5 +245,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React default
+    "http://127.0.0.1:3000",
+    "http://localhost:8080",  # Vue default
+    "http://127.0.0.1:8080",
+]
 CORS_ALLOW_CREDENTIALS = True

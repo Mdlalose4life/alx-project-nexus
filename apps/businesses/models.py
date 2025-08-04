@@ -2,6 +2,9 @@ from django.contrib.gis.db import models  # For PointField
 from django.utils.text import slugify
 from django.utils.crypto import get_random_string
 from django.contrib.auth import get_user_model
+from django.db.models import Avg, Count
+from django.contrib.gis.db import models
+
 
 User = get_user_model()
 
@@ -96,6 +99,14 @@ class Business(models.Model):
         models.Index(fields=['is_featured']),
         models.Index(fields=['created_at']),
     ]
+        
+    @property
+    def average_rating(self):
+        return self.reviews.aggregate(avg=Avg('rating'))['avg'] or 0.0
+    
+    @property  
+    def total_reviews(self):
+        return self.reviews.count()
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -149,3 +160,21 @@ class BusinessImage(models.Model):
 
     class Meta:
         ordering = ['-is_primary', 'id']
+        
+
+
+
+class BusinessQuerySet(models.QuerySet):
+    def with_stats(self):
+        """Annotate businesses with review statistics"""
+        return self.annotate(
+            average_rating=models.Avg('reviews__rating', default=0.0),
+            total_reviews=models.Count('reviews', distinct=True)
+        )
+
+class BusinessManager(models.Manager):
+    def get_queryset(self):
+        return BusinessQuerySet(self.model, using=self._db).with_stats()
+    
+    def with_stats(self):
+        return self.get_queryset().with_stats()

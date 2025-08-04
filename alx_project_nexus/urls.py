@@ -1,34 +1,49 @@
 """
-URL configuration for alx_project_nexus project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+Main project URL configuration.
 """
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework.documentation import include_docs_urls
-from debug_toolbar.toolbar import debug_toolbar_urls
+from django.views.generic import RedirectView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
+    
+    # API Documentation - Available at root for easy access
+    path('', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui-root'),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
+    # API v1
     path('api/v1/', include('api.v1.urls')),
-    path('api-auth/', include('rest_framework.urls')),
-    # path('api/docs/', include_docs_urls(title='LocalBiz API')),
+    
+    # Health check endpoint
+    path('health/', include('api.health.urls')), 
+    # Redirect old API paths
+    path('api/', RedirectView.as_view(url='/api/v1/', permanent=True)),
+]
 
-] + debug_toolbar_urls()
-
+# Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    
+    # Add debug toolbar in development
+    if 'debug_toolbar' in settings.INSTALLED_APPS:
+        import debug_toolbar
+        urlpatterns = [
+            path('__debug__/', include(debug_toolbar.urls)),
+        ] + urlpatterns
+
+# Customize admin site headers
+admin.site.site_header = "Local Business Directory Admin"
+admin.site.site_title = "Business Directory"
+admin.site.index_title = "Welcome to Business Directory Administration"
