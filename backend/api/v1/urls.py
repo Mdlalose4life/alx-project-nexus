@@ -37,7 +37,7 @@ router.register(r'product-categories', ProductCategoryViewSet, basename='product
 # router.register(r'businesses/(?P<business_pk>[^/.]+)/products', ProductViewSet, basename='business-products')
 
 # Order endpoints
-router.register(r'cart', CartViewSet, basename='cart')
+# router.register(r'cart', CartViewSet, basename='cart')
 router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'delivery-info', DeliveryInfoViewSet, basename='deliveryinfo')
 router.register(r'ratings', OrderRatingViewSet, basename='orderrating')
@@ -80,4 +80,16 @@ urlpatterns = [
     
     # Order specific endpoints
     path('analytics/business/<int:business_id>/', BusinessOrderAnalyticsView.as_view(), name='business-order-analytics'),
+    
+    # Cart endpoints (singleton pattern)
+    path('cart/', CartViewSet.as_view({'get': 'retrieve'}), name='cart-detail'),
+    path('cart/add-item/', CartViewSet.as_view({'post': 'add_item'}), name='cart-add-item'),
+    path('cart/items/<int:item_id>/', CartViewSet.as_view({
+        'patch': 'update_item', 
+        'delete': 'remove_item'
+    }), name='cart-item-detail'),
+    path('cart/clear/', CartViewSet.as_view({'delete': 'clear'}), name='cart-clear'),
+    path('cart/clear-business/<int:business_id>/', CartViewSet.as_view({
+        'delete': 'clear_business'
+    }), name='cart-clear-business')
 ]
