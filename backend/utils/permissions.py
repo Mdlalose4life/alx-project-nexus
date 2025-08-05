@@ -45,3 +45,24 @@ class IsBusinessOwnerOrReadOnly(permissions.BasePermission):
             return obj.business.owner == request.user
         
         return False
+
+class IsBusinessOwnerOrCustomer(permissions.BasePermission):
+    """
+    Permission class that allows business owners to manage their orders
+    and customers to view their own orders.
+    """
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+    
+    def has_object_permission(self, request, view, obj):
+        # For orders, check if user is the customer or business owner
+        if hasattr(obj, 'customer') and hasattr(obj, 'business'):
+            return (obj.customer == request.user or 
+                   obj.business.owner == request.user)
+        
+        # For delivery info, check through the order
+        if hasattr(obj, 'order'):
+            return (obj.order.customer == request.user or 
+                   obj.order.business.owner == request.user)
+        
+        return False
