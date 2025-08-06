@@ -1,8 +1,11 @@
 import Classes from "@/components/Body/Classes";
 import HeroSection from "@/components/Body/HeroSection";
+import LeftSideNav from "@/components/Body/responsiveMobileSideNav/leftSideNav";
+import RightSideNav from "@/components/Body/responsiveMobileSideNav/rightSideNav";
 import SideNav from "@/components/Body/SideNav";
 import HorizintalDevider from "@/components/common/Dividers/Horizontal-devider";
 import ProductCard from "@/components/common/ProductCard";
+import { useEffect, useRef, useState } from "react";
 const TestProducts = [
   {
     id: 1,
@@ -623,62 +626,47 @@ const TestProducts = [
 
 
 const Home: React.FC = () => {
+  const [activePanel, setActivePanel] = useState<"left" | "right"| null>(null)
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const classesRef = useRef<HTMLDivElement>(null);
+  const [offsetTop, setOffsetTop] = useState(0);
+
+const handleSetMenuAndPanel = (menu: string, panel: "left" | "right") => {
+  setActiveMenu(menu);
+  setActivePanel(panel);
+
+  requestAnimationFrame(() => {
+    if (classesRef.current) {
+      const offset = classesRef.current.offsetTop;
+      setOffsetTop(offset);
+
+      classesRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  });
+};
+
+
+
   return (
     <div className="flex flex-col items-center bg-white p-1">
       <HorizintalDevider thickness="h-[2px]"/>
       <HeroSection/>
-      <Classes/>
+      <Classes 
+        ref={classesRef}
+        setActiveMenu={(menu) => handleSetMenuAndPanel(menu, activePanel!)}
+        setActivePanel={(panel) => setActivePanel(panel)}
+      />
       <div className="flex flex-row w-full p-1.5">
           <section className="hidden lg:block lg:w-[15%]">
             <SideNav/>
           </section>
             <section className="w-full lg:w-[85%] bg-[#ececec] p-2 lg:px-6 lg:py-3 rounded-xl overflow-y-auto max-h-[80vh]">
               <ProductCard products={TestProducts}/>
-              {/* <div>
-                <div className="flex flex-col absolute top-66 right-2 z-50 bg-[#EDECFE] text-black p-4 rounded-xl gap-3">
-                    <div className="border bg-white border-[#ececec] rounded-r-xl h-[70%] p-5">
-                      <h3 className="font-bold mb-2">Shop</h3>
-                      <div className="flex flex-col space-y-3">
-                        <span>Incredible Connection</span>
-                        <span>Evetech</span>
-                        <span>Loot</span>
-                        <span>Kilimall</span>
-                        <span>TechSmart</span>
-                      </div>
-                    </div>
-                    <HorizintalDevider/>
-                   <div className="mt-4 border bg-white border-[#ececec] rounded-r-xl  h-[30%] p-5">
-                    <h5 className="font-semibold mb-1">Filters</h5>
-                    <div className="flex flex-col space-y-3">
-                      <span>High to Low</span>
-                      <span>Low to High</span>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
-
-              {/* <div>
-                <div className="flex flex-col absolute top-66 right-34 z-50 bg-[#EDECFE] text-black p-4 rounded-xl gap-3">
-                    <div className="border bg-white border-[#ececec] rounded-l-xl h-[70%] p-5">
-                      <h3 className="font-bold mb-2">Shop</h3>
-                      <div className="flex flex-col space-y-3">
-                        <span>Incredible Connection</span>
-                        <span>Evetech</span>
-                        <span>Loot</span>
-                        <span>Kilimall</span>
-                        <span>TechSmart</span>
-                      </div>
-                    </div>
-                    <HorizintalDevider/>
-                   <div className="mt-4 border bg-white border-[#ececec] rounded-l-xl  h-[30%] p-5">
-                    <h5 className="font-semibold mb-1">Filters</h5>
-                    <div className="flex flex-col space-y-3">
-                      <span>High to Low</span>
-                      <span>Low to High</span>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
+              {activePanel === "left" && <LeftSideNav activeMenu={activeMenu} topOffset={offsetTop + 40}/>}
+              {activePanel === "right" && <RightSideNav activeMenu={activeMenu} topOffset={offsetTop + 40} />}
           </section>
       </div>
     </div>

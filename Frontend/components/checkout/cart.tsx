@@ -5,7 +5,7 @@ import CartPriceSumary from "./cart/cartPriceSumary";
 const Cart: React.FC = () => {
   return (
     <div className="flex flex-col gap-5 w-full lg:w-[100%] p-2">
-      <div className="gap-x-2">
+      <div className="flex flex-col gap-2">
         <span className="font-semibold text-2xl">Shopping Card</span>
         <HorizintalDevider color="bg-gray-300" thickness="h-[1px]" />       
       </div>
