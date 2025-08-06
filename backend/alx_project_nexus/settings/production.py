@@ -7,7 +7,12 @@ SECRET_KEY = config('SECRET_KEY')  # No default - fail early if missing
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
 
 # Make these optional with empty defaults
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',') or []
+CSRF_TRUSTED_ORIGINS = [
+    'https://alx-project-nexus-b00y.onrender.com',
+    'https://*.onrender.com',
+    'http://localhost:8000'  # For local testing
+]
+
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',') or []
 
 # Database
@@ -75,7 +80,7 @@ LOGGING = {
         'file': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/django/alx_project_nexus.log',
+            'filename': './alx_project_nexus.log',
             'maxBytes': 1024 * 1024 * 15,  # 15MB
             'backupCount': 10,
             'formatter': 'verbose',
