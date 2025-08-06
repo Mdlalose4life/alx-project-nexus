@@ -26,3 +26,4 @@ numpy==2.0.0  # More stable version
 python-decouple==3.8
 drf-spectacular==0.28.0
 django-filter==25.1
+django-rest-framework-gis==1.2.0"
