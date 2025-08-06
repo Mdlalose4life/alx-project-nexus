@@ -98,3 +98,11 @@ LOGGING = {
         },
     },
 }
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# For Django admin static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
