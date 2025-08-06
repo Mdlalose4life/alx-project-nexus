@@ -23,3 +23,4 @@ protobuf==3.20.3  # Downgraded
 numpy==2.0.0  # More stable version
 
 python-decouple==3.8
+drf-spectacular==0.28.0
