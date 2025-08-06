@@ -21,3 +21,5 @@ python-dotenv==1.1.0
 # Fix potential troublemakers
 protobuf==3.20.3  # Downgraded
 numpy==2.0.0  # More stable version
+
+python-decouple==3.8
