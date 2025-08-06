@@ -4,7 +4,10 @@ from decouple import config
 # Security
 DEBUG = False
 SECRET_KEY = config('SECRET_KEY')  # No default - fail early if missing
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS', 
+    default='localhost,127.0.0.1,alx-project-nexus-b00y.onrender.com'
+).split(',')
 
 # Make these optional with empty defaults
 CSRF_TRUSTED_ORIGINS = [
