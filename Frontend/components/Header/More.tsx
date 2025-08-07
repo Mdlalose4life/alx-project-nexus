@@ -26,11 +26,11 @@ const More: React.FC<MoreProp> = ({activeView, setActiveView}) => {
                 onClick={toggleMore}
                 className="p-[6px] hover:scale-105 transform transition-transform duration-300 cursor-pointer"
                 >
-                <CiCircleMore size={20} />
+                <CiCircleMore size={30} />
                 </button>
 
                 {isOpen && moreView === "menu" && (
-                <div className="flex flex-col absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[120px] lg:w-[120px] gap-5 bg-[#EDECFE] text-black p-4 rounded-xl shadow-xl z-20">
+                <div className="flex flex-col absolute top-full left-1/2 -translate-x-[86%] mt-2 w-[120px] lg:w-[120px] gap-5 bg-[#EDECFE] text-black p-4 rounded-xl shadow-xl z-20">
                     <div className="flex flex-row items-center justify-center gap-2.5">
                         <button 
                         className="flex flex-row justify-center items-center gap-3.5 font-semibold lg:text-md bg-[#D5D3FD] rounded-2xl py-2 w-full text-sm hover:bg-[#c2c0f5] transition-colors"

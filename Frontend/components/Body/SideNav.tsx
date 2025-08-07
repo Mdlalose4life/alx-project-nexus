@@ -90,7 +90,7 @@ const SideNav: React.FC = () => {
         <div className="mt-4 border bg-[#ececec] border-[#ececec] rounded-r-xl  h-[30%] p-5">
           <h5 className="font-semibold mb-1">Filters</h5>
             <HorizintalDevider color="bg-gray-300" thickness="h-[1.5px]"/>
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-3 lg:pt-1.5">
             <span className="hover:bg-[#c2c0f5] rounded-full p-2 text-sm w-[150px]">High to Low</span>
             <span className="hover:bg-[#c2c0f5] rounded-full p-2 text-sm w-[150px]">Low to High</span>
           </div>

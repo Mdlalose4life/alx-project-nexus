@@ -11,7 +11,6 @@ const MainHeader: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-       console.log("Clicked at", event.target);
       if (
         headerRef.current &&
         !headerRef.current.contains(event.target as Node)

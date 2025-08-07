@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 import { BiCategory } from "react-icons/bi";
 import { FaChevronDown } from "react-icons/fa";
 import { CiShop, CiLocationOn } from "react-icons/ci";
@@ -7,17 +7,16 @@ import { useMenu } from "@/store/MenuContext";
 
 interface ClassesProps {
   setActivePanel: (panel: "left" | "right") => void;
-  setActiveMenu: (menu: string) => void; // for mobile
+  setActiveMenu: (menu: string) => void;
 }
 
 const Classes = forwardRef<HTMLDivElement, ClassesProps>(
   ({ setActivePanel, setActiveMenu }, ref) => {
-    const { setActiveMenu: setMenuInContext } = useMenu(); // for desktop
+    const { setActiveMenu: setMenuInContext } = useMenu();
 
-    // Unified handler for both
     const handleClick = (menu: string, panel: "left" | "right") => {
-      setActiveMenu(menu);           // for mobile panels
-      setMenuInContext(menu as any); // for desktop SideNav
+      setActiveMenu(menu);
+      setMenuInContext(menu as any);
       setActivePanel(panel);
     };
 

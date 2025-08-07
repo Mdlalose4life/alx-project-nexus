@@ -11,7 +11,7 @@ const ProductCard: React.FC<{ products: Product[] }> = ({ products }) => {
     <section className="w-full">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((product) => (
-          <div key={product.id} className="bg-white p-3 shadow rounded-lg duration-300 transform hover:scale-105">
+          <div key={product.id} className="bg-white p-3 h-[300px] shadow rounded-lg duration-300 transform hover:scale-105">
             <img
               src={product.image}
               alt={product.name}
