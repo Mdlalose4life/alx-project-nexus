@@ -630,7 +630,9 @@ const Home: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const classesRef = useRef<HTMLDivElement>(null);
   const [offsetTop, setOffsetTop] = useState(0);
+  const [rightOffset, setRightOffset] = useState(0);
   const [showBackdrop, setShowBackdrop] = useState(false);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
 const handleSetMenuAndPanel = (menu: string, panel: "left" | "right") => {
   setActivePanel(panel);
@@ -648,6 +650,20 @@ const handleSetMenuAndPanel = (menu: string, panel: "left" | "right") => {
     }
   });
 };
+
+useEffect(() => {
+  const RightOffset = () => {
+    if (elementRef.current) {
+      const rect = elementRef.current.getBoundingClientRect();
+      const offset = window.innerWidth - rect.right;
+      setRightOffset(offset);
+    }
+  };
+
+  RightOffset();
+  window.addEventListener("resize", RightOffset);
+  return () => window.removeEventListener("resize", RightOffset);
+}, []);
 
 const closeBackdrop = () => {
   setActivePanel(null);
@@ -695,14 +711,14 @@ useEffect(() => {
                   onClick={closeBackdrop}
                   className="lg:hidden fixed left-0 right-0 bottom-0 bg-opacity-30 z-40"
                   style={{ 
-                    top: `${offsetTop - 180}px`,
+                    top: `${offsetTop - 160}px`,
                     backgroundColor: "rgba(255, 255, 255, 0.3)",
                     backdropFilter: "blur(2px)" 
                   }}
                 />
               )}
 
-              {activePanel === "left" && <LeftSideNav topOffset={offsetTop + 40}/>}
+              {activePanel === "left" && <LeftSideNav topOffset={offsetTop + 40} rightOffset={rightOffset - 15}/>}
               {activePanel === "right" && <RightSideNav topOffset={offsetTop + 40} />}
               <div className="flex flex-col justify-center items-center pt-3">
                 <button className="flex flex-row font-semibold w-[40px] items-center justify-center border-[#edecfe] bg-[#edecfe] px-2.5 rounded-lg hover:border-[#1c3454] hover:bg-[#c2c0f5]"> 

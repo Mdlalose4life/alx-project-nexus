@@ -59,14 +59,15 @@ const  TestMenu = [
 
 interface ActiveProps {
   topOffset?: number;
+  rightOffset?:number
 }
-const LeftSideNav: React.FC<ActiveProps> = ({ topOffset}) => {
+const LeftSideNav: React.FC<ActiveProps> = ({ topOffset, rightOffset}) => {
       const { activeMenu} = useMenu()
       const selected = TestMenu.find(menu => menu.name === activeMenu);
     return (
             <div className="inset-0 z-50 lg:hidden">
-                <div className="lg:hidden block flex-col absolute top-[37%] right-48 z-40 bg-[#EDECFE] text-black p-4 rounded-xl gap-3"
-                    style={{ top: `${topOffset}px` }}
+                <div className="lg:hidden block flex-col absolute top-[37%] z-40 bg-[#EDECFE] text-black p-4 rounded-xl gap-3"
+                    style={{ top: `${topOffset}px` , left: `${rightOffset}`}}
                 >
                     <div className="border bg-[#c2c0f5]  border-[#ececec] rounded-l-xl h-[70%] p-5">
                         <h3 className="font-bold mb-2">{ activeMenu || "Shop"}</h3>
