@@ -31,13 +31,9 @@ router.register(r'business-categories', BusinessCategoryViewSet, basename='busin
 
 # Product endpoints  
 router.register(r'products', ProductViewSet, basename='product')
-router.register(r'product-categories', ProductCategoryViewSet, basename='productcategory')
-
-# Nested routes for business products
-# router.register(r'businesses/(?P<business_pk>[^/.]+)/products', ProductViewSet, basename='business-products')
+router.register(r'categories', ProductCategoryViewSet, basename='category')  # Changed from 'product-categories'
 
 # Order endpoints
-# router.register(r'cart', CartViewSet, basename='cart')
 router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'delivery-info', DeliveryInfoViewSet, basename='deliveryinfo')
 router.register(r'ratings', OrderRatingViewSet, basename='orderrating')
@@ -69,14 +65,15 @@ urlpatterns = [
     path('businesses/featured/', BusinessViewSet.as_view({'get': 'featured'}), name='businesses_featured'),
     path('businesses/with-products/', BusinessViewSet.as_view({'get': 'with_products'}), name='businesses_with_products'),
     path('businesses/<int:pk>/toggle-featured/', BusinessViewSet.as_view({'post': 'toggle_featured'}), name='business_toggle_featured'),
+    path('businesses/<int:business_id>/products/', ProductViewSet.as_view({'get': 'list', 'post': 'create'}), name='business_products'),
     
-    # Product specific endpoints
+    # Product specific endpoints - CLEANED UP
     path('products/featured/', ProductViewSet.as_view({'get': 'featured'}), name='products_featured'),
     path('products/search/', ProductViewSet.as_view({'get': 'search'}), name='products_search'),
-    path('products/by-category/<slug:category_slug>/', ProductViewSet.as_view({'get': 'by_category'}), name='products_by_category'),
+    # REMOVED: path('products/by-category/<slug:category_slug>/', ...) - This is now redundant!
     
-    # Business products nested endpoint
-    path('businesses/<int:business_id>/products/', ProductViewSet.as_view({'get': 'list', 'post': 'create'}), name='business_products'),
+    # Category endpoints with products - NEW CLEAN APPROACH
+    path('categories/<slug:category_slug>/products/', ProductViewSet.as_view({'get': 'by_category'}), name='category_products'),
     
     # Order specific endpoints
     path('analytics/business/<int:business_id>/', BusinessOrderAnalyticsView.as_view(), name='business-order-analytics'),
