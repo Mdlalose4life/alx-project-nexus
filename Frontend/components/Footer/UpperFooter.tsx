@@ -4,10 +4,10 @@ const UpperFooter: React.FC = () => {
   return (
     <div className="flex flex-col">
         <div className="">
-            <img src="Images/Logo.png" alt="Lower Logo" className="w-[130px]"/>
+            <img src="Images/Logo.png" alt="Lower Logo" className="w-[100px]"/>
         </div>
         <div className="pl-11.5">
-            <div className="flex flex-wrap lg:flex-nowrap lg:justify-center text-[#1c3454] text-[12px] lg:text-[16px] gap-[60px] lg:gap-60">
+            <div className="flex flex-wrap lg:flex-nowrap lg:justify-center text-[#1c3454] text-[12px] lg:text-sm gap-[60px] lg:gap-60">
                 <div className="flex flex-col gap-[9px] lg:gap-5">
                     <h3 className="font-semibold">Explore</h3>
                     <p>TVs on Sale</p>
