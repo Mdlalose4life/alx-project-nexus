@@ -1,4 +1,18 @@
+'use client';
+import React from 'react';
+
+
 const SideNav: React.FC = () => {
+  
+    const categories = async()=>{
+     const data = await fetch('/api/v1/business-categories');
+      if (!data.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const result = await data.json();
+      console.log("hello data", result);
+      return result;
+  } 
   return (
     <aside className="h-full">
       <div className="flex flex-col justify-between h-full p-2">
@@ -20,6 +34,7 @@ const SideNav: React.FC = () => {
             <span>Low to High</span>
           </div>
         </div>
+        <button className=" border-2"onClick={()=>{categories()}}>categories</button>
       </div>
     </aside>
   );
