@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { IoBagCheckOutline } from "react-icons/io5";
 import { PiShoppingCartLight } from "react-icons/pi";
 
 interface CartProp {
@@ -41,9 +43,13 @@ const Cart: React.FC<CartProp> = ({ activeView, setActiveView }) => {
               <span className="text-sm lg:text-md ">R 1200</span>
             </div>
           </div>
-          <button className="bg-[#D5D3FD] rounded-2xl py-2 w-full text-sm font-medium hover:bg-[#c2c0f5] transition-colors lg:text-md">
-            Checkout
-          </button>
+          <Link href={"/CartPage"}>
+            <button
+            className="flex flex-row justify-center items-center gap-3 font-semibold bg-[#D5D3FD] rounded-2xl py-2 w-full text-sm hover:bg-[#c2c0f5] transition-colors lg:text-md">
+              <IoBagCheckOutline />
+              Cart
+            </button>
+          </Link>
         </div>
       )}
     </div>

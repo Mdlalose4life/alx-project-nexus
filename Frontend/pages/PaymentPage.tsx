@@ -1,7 +1,8 @@
 import Cart from "@/components/Cart/cart";
+import Payment from "@/components/payment/payment";
 import { useState } from "react";
 
-const CartPage = () => {
+const PaymentPage = () => {
   const [quantity, setQuantity] = useState(1);
 
   const handleIncrease = () => setQuantity((prev) => prev + 1);
@@ -10,18 +11,8 @@ const CartPage = () => {
 
   return (
     <main className="">
-      <Cart
-        // name="LG OLED evo C3 4K Smart TV"
-        // price={7500}
-        // image="/Images/productG.jpeg"
-        // seller="Evetech"
-        // quantity={quantity}
-        // onIncrease={handleIncrease}
-        // onDecrease={handleDecrease}
-        // onRemove={handleRemove}
-      />
+      <Payment/>
     </main>
   );
 };
-
-export default CartPage;
+export default PaymentPage;

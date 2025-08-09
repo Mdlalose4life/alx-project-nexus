@@ -1,6 +1,9 @@
+import Link from "next/link";
+
 type Product = {
   id: number;
   name: string;
+  slug: string
   description: string;
   price: number;
   image: string;
@@ -21,9 +24,12 @@ const ProductCard: React.FC<{ products: Product[] }> = ({ products }) => {
             <p className="text-gray-600 text-sm">{product.description}</p>
             <div className="flex justify-between">
               <p className="text-green-600 font-semibold mt-1">R{product.price}</p>
-              <button className="font-semibold border-[#edecfe] bg-[#edecfe]  px-2.5 rounded-lg hover:border-[#1c3454] hover:bg-[#c2c0f5]">
-                Select
-              </button>
+              <Link
+                href={`/product/${product.slug}`}
+                className="font-semibold border-[#edecfe] bg-[#edecfe] px-2.5 rounded-lg hover:border-[#1c3454] hover:bg-[#c2c0f5]"
+              >
+                View
+              </Link>
             </div>
           </div>
         ))}

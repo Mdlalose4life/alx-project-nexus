@@ -1,4 +1,5 @@
 import HorizintalDevider from "@/components/common/Dividers/Horizontal-devider";
+import Link from "next/link";
 
 const CartPriceSumary: React.FC = () => {
   return (
@@ -17,9 +18,11 @@ const CartPriceSumary: React.FC = () => {
         <div>Subtotal</div>
         <span className="font-semibold text-gray-500 lg:text-lg">R7 500</span>
       </div>
-      <div className="flex justify-center">
+      <Link href="/PaymentPage">
+        <div className="flex justify-center">
           <button className="bg-[#D5D3FD] rounded-4xl py-1 px-5 font-semibold lg:text-lg">Checkout</button>
       </div>
+      </Link>
     </div>
   );
 };
