@@ -64,8 +64,8 @@ const SideNav: React.FC = () => {
 
   return (
     <aside className="h-full">
-      <div className="flex flex-col justify-between h-full p-2">
-        <div className="border bg-[#ececec] border-[#ececec] rounded-r-xl h-[70%] p-5">
+      <div className="flex flex-col justify-between p-2">
+        <div className="border bg-[#ececec] border-[#ececec] rounded-r-xl min-h-[70%] p-5">
           <h3 className="font-bold mb-1">{activeMenu || "Shop"}</h3>
           <HorizintalDevider color="bg-gray-300" thickness="h-[1.5px]"/>
           <div className="flex flex-col space-y-3 max-h-[380px] overflow-y-auto hide-scrollbar lg:pt-1.5">
@@ -86,7 +86,6 @@ const SideNav: React.FC = () => {
              )}
           </div>
         </div>
-
         <div className="mt-4 border bg-[#ececec] border-[#ececec] rounded-r-xl  h-[30%] p-5">
           <h5 className="font-semibold mb-1">Filters</h5>
             <HorizintalDevider color="bg-gray-300" thickness="h-[1.5px]"/>
