@@ -58,6 +58,12 @@ class ProductAdmin(admin.ModelAdmin):
     
     actions = ['feature_products', 'unfeature_products', 'mark_out_of_stock']
     
+    def save_model(self, request, obj, form, change):
+        """Override save_model to ensure slug and SKU are generated"""
+        # The model's save() method will handle slug and SKU generation
+        # but we can add any admin-specific logic here if needed
+        super().save_model(request, obj, form, change)
+    
     def stock_status(self, obj):
         if not obj.track_inventory:
             return format_html('<span style="color: blue;">Not tracked</span>')

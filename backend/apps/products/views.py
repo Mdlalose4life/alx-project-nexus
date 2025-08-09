@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
@@ -16,12 +17,12 @@ from api.v1.serializers.products import (
     list=extend_schema(
         summary="List all product categories",
         description="Retrieve a hierarchical list of all active product categories",
-        tags=["Product Categories"]
+        tags=["Categories"]
     ),
     retrieve=extend_schema(
         summary="Get product category details",
         description="Retrieve detailed information about a specific product category",
-        tags=["Product Categories"]
+        tags=["Categories"]
     ),
 )
 class ProductCategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,11 +30,13 @@ class ProductCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     ViewSet for product categories.
     
     Provides read-only access to product categories with hierarchical structure.
+    Note: To get products in a category, use /categories/{slug}/products/
     """
     queryset = ProductCategory.objects.filter(is_active=True)
     serializer_class = ProductCategorySerializer
     permission_classes = [permissions.AllowAny]
     lookup_field = 'slug'
+
 
 @extend_schema_view(
     list=extend_schema(
@@ -286,13 +289,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     
+    # UPDATED: This method now handles the new URL pattern
+    # Called when accessing /categories/{slug}/products/
     @extend_schema(
         summary="Get products by category",
-        description="Retrieve products filtered by category slug",
-        tags=["Products"],
+        description="Retrieve products filtered by category slug. Access via /categories/{slug}/products/",
+        tags=["Products", "Categories"],
         parameters=[
             OpenApiParameter(
-                name='category_slug',
+                name='slug',
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.PATH,
                 required=True,
@@ -300,21 +305,23 @@ class ProductViewSet(viewsets.ModelViewSet):
             ),
         ]
     )
-    @action(detail=False, methods=['get'], url_path='category/(?P<category_slug>[^/.]+)')
+    @action(detail=False, methods=['get'])
     def by_category(self, request, category_slug=None):
-        """Get products by category slug"""
-        try:
-            category = ProductCategory.objects.get(slug=category_slug, is_active=True)
-        except ProductCategory.DoesNotExist:
+        """Get products by category slug - handles /categories/{slug}/products/"""
+        
+        if not category_slug:
             return Response(
-                {'error': 'Category not found'}, 
-                status=status.HTTP_404_NOT_FOUND
+                {'error': 'Category slug is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
             )
+        
+        # Get the category
+        category = get_object_or_404(ProductCategory, slug=category_slug, is_active=True)
         
         # Include products from child categories if this is a parent category
         categories = [category]
-        if hasattr(category, 'children'):
-            categories.extend(category.children.filter(is_active=True))
+        child_categories = ProductCategory.objects.filter(parent=category, is_active=True)
+        categories.extend(child_categories)
         
         queryset = self.get_queryset().filter(category__in=categories)
         
@@ -367,6 +374,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             'is_featured': product.is_featured
         })
     
+    # ... (keep all other existing methods like update_stock, analytics, etc.)
     @extend_schema(
         summary="Update product stock",
         description="Update product stock quantity (business owner only)",

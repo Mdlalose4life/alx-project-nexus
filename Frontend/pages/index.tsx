@@ -623,12 +623,14 @@ const TestProducts = [
 
 
 const Home: React.FC = () => {
+
   return (
     <div className="flex flex-col items-center bg-white p-1">
       <HorizintalDevider thickness="h-[2px]"/>
       <HeroSection/>
       <Classes/>
       <div className="flex flex-row w-full p-1.5">
+
           <section className="hidden lg:block lg:w-[15%]">
             <SideNav/>
           </section>
