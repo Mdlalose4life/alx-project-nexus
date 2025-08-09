@@ -1,68 +1,81 @@
 import HorizintalDevider from "@/components/common/Dividers/Horizontal-devider";
-import Cart from "@/components/Header/Cart";
 import Image from "next/image";
 import { useState } from "react";
 import { CiShop } from "react-icons/ci";
-import { FaStar, FaRegStar } from "react-icons/fa";
+import { PiShoppingCart } from "react-icons/pi";
+import { IoBagCheckOutline } from "react-icons/io5";
+import Link from "next/link";
 
-const ProductDetailsPage: React.FC = () => {
+interface TestProductProps {
+  TestProduct: {
+    id: number;
+    slug: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    thumbnails: string[];
+    keyFeatures?: string[];
+  };
+}
+
+const ProductDetailsPage: React.FC<TestProductProps> = ({TestProduct}) => {
   const [mainImage, setMainImage] = useState("/Images/productG.jpeg");
-
-  const thumbnailImages = [
-    "/Images/productG.jpeg",
-    "/Images/productG.jpeg",
-    "/Images/productG.jpeg",
-    "/Images/productG.jpeg",
-    "/Images/productG.jpeg",
-  ];
 
   return (
     <div className="p-4 md:p-8 w-full">
-      <h1 className="lg:text-xl font-semibold lg:text-center lg:mb-6 lg:mr-90">LG OLED evo C3 4K Smart TV</h1>
+      <h1 className="lg:text-xl font-semibold lg:text-center lg:mb-6 lg:mr-90">{TestProduct.name}</h1>
       <div className="flex flex-col lg:flex-row gap-10">
         <div>
             <div className="flex flex-col lg:flex-row gap-4 flex-1">
-                <div className="flex lg:flex-col gap-2 overflow-y-auto max-h-[80vh] lg:overflow-visible">
-                    {thumbnailImages.map((src, index) => (
+                <div className="flex lg:flex-col gap-2 overflow-y-auto max-h-[70vh] lg:overflow-visible">
+                    {TestProduct.thumbnails.map((src, index) => (
                     <Image
                         key={index}
-                        src={src}
-                        alt="thumbnail"
+                        src={TestProduct.image}
+                        alt={TestProduct.name}
                         width={100}
                         height={100}
                         className="border border-gray-300 rounded cursor-pointer"
                         onClick={() => setMainImage(src)}
                     />
                     ))}
-                    <div className="w-[80px] h-[80px] flex items-center justify-center border rounded bg-gray-100 text-sm">
+                    <div className="w-[80px] h-[100px] flex items-center justify-center border rounded bg-gray-100 text-sm">
                     +5
                     </div>
                 </div>
-                <div className="flex justify-center items-center rounded w-full lg:w-[800px] h-auto">
+                <div className="flex justify-center items-center rounded w-full lg:w-[700px] h-auto">
                     <Image
                     src={mainImage}
-                    alt="Product"
+                    alt={TestProduct.image}
                     width={500}
                     height={400}
                     className="object-contain"
                     />
                 </div>
             </div>
-            <div className="flex justify-center mt-4 gap-3">
-                <button className="flex flex-row items-center bg-[#c3c1fb] text-black px-6 py-2 rounded-full font-semibold hover:bg-[#a3a1f8]">
-                    <Cart/>
-                    Add To Cart
-                </button>
-                <button className="flex flex-row items-center bg-[#c3c1fb] text-black px-6 py-2 rounded-full font-semibold hover:bg-[#a3a1f8]">
+            <div className="flex flex-wrap justify-center mt-4 gap-3 sm:flex-nowrap">
+                <Link href={"/CartPage"}>
+                  <button
+                    className="flex flex-row items-center bg-[#c3c1fb] text-black px-4 py-1 rounded-full font-semibold hover:bg-[#a3a1f8] gap-3">
+                      <IoBagCheckOutline size={30}/>
+                       Cart
+                  </button>
+                </Link>
+                <button className="flex flex-row items-center bg-[#c3c1fb] text-black px-4 py-1 rounded-full font-semibold hover:bg-[#a3a1f8] gap-3">
                     <CiShop size={30}/>
-                    Shop
+                    Shops
+                </button>
+                  <button className="flex flex-row items-center bg-[#c3c1fb] text-black px-4 py-1 rounded-full font-semibold hover:bg-[#a3a1f8] gap-3">
+                    <CiShop size={30}/>
+                    Add To Cart
                 </button>
             </div>
         </div>
 
         <div className="bg-[#f5f4fe] border border-gray-200 rounded-3xl p-6 w-full lg:w-[50%] text-center">
           <h2 className="font-semibold mb-2">Review</h2>
-          <p className="text-sm mb-2">LG OLED evo C3 4K Smart TV</p>
+          <p className="text-sm mb-2">{TestProduct.name}</p>
           <div className="flex justify-center bg-white rounded-4xl text-6xl">
             <img src="/Images/review.png" alt="Reviews" className="h-[520px]" />
           </div>
@@ -71,19 +84,11 @@ const ProductDetailsPage: React.FC = () => {
             </p>
         </div>
       </div>
-      <div className="mt-2 lg:w-[50%]">
+      <div className="mt-2 lg:w-[60%]">
         <h2 className="text-lg font-semibold mb-2">Description</h2>
         <HorizintalDevider/>
         <p className="text-sm text-gray-700 leading-relaxed mb-8">
-            The LG OLED evo C3 4K Smart TV is a premium television designed for immersive entertainment, 
-            blending stunning picture quality with intelligent features. Powered by LG’s α9 AI Processor Gen,
-            it delivers breathtaking visuals with self-lit OLED evo technology—producing perfect blacks, vibran
-            t colors, and exceptional contrast. Whether you're streaming movies, gaming, or browsing content,
-            its 120Hz refresh rate, Dolby Vision, Dolby Atmos, and advanced gaming features like NVIDIA
-            G-Sync and FreeSync make every experience smooth and lifelike. With webOS 23 and ThinQ AI, 
-            users enjoy a personalized smart interface with voice control and seamless smart home integration.
-            Sleek and minimalist, the LG C3 fits beautifully in any modern space, making it an ideal centerpiece 
-            for both tech lovers and design-conscious viewers.
+          {TestProduct.description}
         </p>
       </div>
     <HorizintalDevider/>

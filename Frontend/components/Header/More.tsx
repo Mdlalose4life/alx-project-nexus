@@ -1,58 +1,65 @@
+import { useState } from "react";
 import { CiCircleMore } from "react-icons/ci";
-const More: React.FC = () => {
-    return (
-        <div className="p-[6px]">
-            <CiCircleMore size={30}/>
-            {/* <div className="flex flex-col absolute top-12.6 right-0 z-50 bg-[#EDECFE] text-black p-4 rounded-xl">
-                <button>Sign in</button>
-                <button>Sign Up</button>
-            </div> */}
-            {/* <div className="flex flex-col absolute top-12.6 right-0 z-50 bg-[#EDECFE] text-black p-4 rounded-xl gap-1">
-                <div className="border border-gray-300 rounded-2xl px-[4px] py-[4px]">
-                    <input 
-                        type="text"
-                        placeholder="Email:"
-                        className="text-sm w-[150px] outline-none"/>
-                </div>
-                <div className="border border-gray-300 rounded-2xl px-[4px] py-[4px]">
-                    <input 
-                        type="text"
-                        placeholder="Password:"
-                        className="text-sm w-[150px] outline-none"/>
-                </div>
-                <button className="bg-[#D5D3FD] rounded-2xl" >Sign Up</button>
+import { GoSignIn } from "react-icons/go";
+import { CiLogin } from "react-icons/ci";
+import Login from "./More/login";
+import Signup from "./More/Signup";
 
-                <div className="text-sm flex flex-col items-center">
-                    <p className="text-black">Not registered <span className="text-[red]" >SignIn</span></p>
-                </div>
-            </div> */}
-
-            {/* <div className="flex flex-col absolute top-12.6 right-0 z-50 bg-[#EDECFE] text-black p-4 rounded-xl gap-1">
-                <div className="border border-gray-300 rounded-2xl px-[4px] py-[4px]">
-                    <input 
-                        type="text"
-                        placeholder="Email:"
-                        className="text-sm w-[150px] outline-none"/>
-                </div>
-                <div className="border border-gray-300 rounded-2xl px-[4px] py-[4px]">
-                    <input 
-                        type="text"
-                        placeholder="Password:"
-                        className="text-sm w-[150px] outline-none"/>
-                </div>
-                <div className="border border-gray-300 rounded-2xl px-[4px] py-[4px]">
-                    <input 
-                        type="text"
-                        placeholder="Comfirm Password:"
-                        className="text-sm w-[150px] outline-none"/>
-                </div>
-                <button className="bg-[#D5D3FD] rounded-2xl" >Sign Up</button>
-                <div className="text-sm flex flex-col items-center">
-                    <p className="text-black">Registered <span className="text-[red]" >SignIn</span></p>
-                </div>
-            </div> */}
-
-        </div>
-    )
+interface MoreProp {
+    activeView: string | null;
+    setActiveView: (view: "Cart" | "Profile" | "More" | null) => void;
 }
-export default More
+
+const More: React.FC<MoreProp> = ({activeView, setActiveView}) => {
+    const isOpen = activeView === "More";
+
+    const [moreView, setMoreView] = useState<"menu" | "signin" | "signup" | null>(null);
+
+    const toggleMore = () => {
+        setActiveView(isOpen ? null : "More")
+        setMoreView("menu")
+    }
+    return (
+        <div className="p-[4px]">
+            <div className="relative inline-block">
+                <button
+                onClick={toggleMore}
+                className="p-[6px] hover:scale-105 transform transition-transform duration-300 cursor-pointer"
+                >
+                <CiCircleMore size={30} />
+                </button>
+
+                {isOpen && moreView === "menu" && (
+                <div className="flex flex-col absolute top-full left-1/2 -translate-x-[86%] mt-2 w-[120px] lg:w-[120px] gap-5 bg-[#EDECFE] text-black p-4 rounded-xl shadow-xl z-20">
+                    <div className="flex flex-row items-center justify-center gap-2.5">
+                        <button 
+                        className="flex flex-row justify-center items-center gap-3.5 font-semibold lg:text-md bg-[#D5D3FD] rounded-2xl py-2 w-full text-sm hover:bg-[#c2c0f5] transition-colors"
+                        onClick={() => setMoreView("signin")}>
+                            <GoSignIn/>
+                            Login
+                        </button>
+                    </div>
+                    <div className="flex flex-row items-center justify-center gap-2.5">
+                        <button 
+                        className="flex flex-row justify-center items-center gap-3.5 font-semibold lg:text-md bg-[#D5D3FD] rounded-2xl py-2 w-full text-sm hover:bg-[#c2c0f5] transition-colors"
+                        onClick={() => setMoreView("signup")}>
+                            <CiLogin />
+                            Sign Up
+                        </button>
+                    </div>
+                </div>
+                )}
+            </div>
+
+        {moreView === "signin" && (
+            <Login />
+        )}
+
+        {moreView === "signup" && (
+            <Signup />
+        )}
+        </div>
+  );
+};
+
+export default More;
