@@ -11,9 +11,6 @@ const ProductPage: React.FC = () => {
     if (!TestProducts) {
       return <p className="p-4"> Loading Products...</p>
     }
-
-    console.log(TestProduct)
-
     return (
         <div className="">
           <ProductDetailsPage TestProduct={TestProduct}/>
