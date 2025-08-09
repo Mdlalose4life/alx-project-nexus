@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const CartPriceSumary: React.FC = () => {
   return (
-    <div className="border border-[#EDECFE] bg-[#EDECFE] rounded-3xl p-4 lg:w-[40%]">
+    <div className="border border-[#EDECFE] bg-[#EDECFE] rounded-3xl p-4 lg:w-[40%] fixed right-0">
       <div className="flex flex-row lg:flex-col font-medium">
         <span className="font-semibold lg:text-lg">Order Summary</span>
       </div>

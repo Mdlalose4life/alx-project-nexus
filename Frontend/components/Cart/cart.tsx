@@ -11,13 +11,6 @@ const Cart: React.FC = () => {
       </div>
       <div className="flex flex-col lg:flex-row gap-6 w-full lg:w-[100%]">
         <CartItem/>
-          {/* <CartItem name={""} price={0} image={""} seller={""} quantity={0} onIncrease={function (): void {
-          throw new Error("Function not implemented.");
-        } } onDecrease={function (): void {
-          throw new Error("Function not implemented.");
-        } } onRemove={function (): void {
-          throw new Error("Function not implemented.");
-        } }/> */}
         <CartPriceSumary/>        
       </div>
 
