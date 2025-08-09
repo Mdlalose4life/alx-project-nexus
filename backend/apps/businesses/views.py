@@ -267,18 +267,30 @@ class BusinessViewSet(viewsets.ModelViewSet):
         summary="Toggle featured status",
         description="Toggle the featured status of a business (admin only)",
         tags=["Businesses"],
-        request=None,
+        request=None,  
         responses={
-            200: OpenApiExample(
-                'Success',
-                value={'message': 'Business featured successfully', 'is_featured': True}
+            200: OpenApiTypes.OBJECT,  
+            403: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            OpenApiExample(
+                "Success Response",
+                value={
+                    "message": "Business featured successfully",
+                    "is_featured": True
+                },
+                response_only=True,
+                status_codes=["200"]
             ),
-            403: OpenApiExample(
-                'Permission denied',
-                value={'error': 'Permission denied'}
+            OpenApiExample(
+                "Error Response",
+                value={"error": "Permission denied"},
+                response_only=True,
+                status_codes=["403"]
             )
-        }
+        ]
     )
+    
     @action(detail=True, methods=['post'])
     def toggle_featured(self, request, slug=None):
         """Toggle featured status (admin only)"""
