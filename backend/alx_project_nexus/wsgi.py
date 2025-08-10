@@ -8,14 +8,9 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 """
 
 import os
-from decouple import config 
+
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'alx_project_nexus.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'alx_project_nexus.settings.production')
 
-if config('DJANGO_ENV', default='development') == 'production':
-    from alx_project_nexus.settings.production import *
-else:
-    from alx_project_nexus.settings.development import *
-
-application = get_wsgi_application()  # <-- Ensure this line exists
+application = get_wsgi_application() 
