@@ -55,7 +55,7 @@ const ProductDetailsPage: React.FC<TestProductProps> = ({TestProduct}) => {
                 </div>
             </div>
             <div className="flex flex-wrap justify-center mt-4 gap-3 sm:flex-nowrap">
-                <Link href={"/CartPage"}>
+                <Link href={"/cart"}>
                   <button
                     className="flex flex-row items-center bg-[#c3c1fb] text-black px-4 py-1 rounded-full font-semibold hover:bg-[#a3a1f8] gap-3">
                       <IoBagCheckOutline size={30}/>

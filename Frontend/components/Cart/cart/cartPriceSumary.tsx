@@ -18,7 +18,7 @@ const CartPriceSumary: React.FC = () => {
         <div>Subtotal</div>
         <span className="font-semibold text-gray-500 lg:text-lg">R7 500</span>
       </div>
-      <Link href="/PaymentPage">
+      <Link href="/payment">
         <div className="flex justify-center">
           <button className="bg-[#D5D3FD] rounded-4xl py-1 px-5 font-semibold lg:text-lg">Checkout</button>
       </div>

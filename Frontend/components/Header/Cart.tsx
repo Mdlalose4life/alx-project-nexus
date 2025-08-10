@@ -43,7 +43,7 @@ const Cart: React.FC<CartProp> = ({ activeView, setActiveView }) => {
               <span className="text-sm lg:text-md ">R 1200</span>
             </div>
           </div>
-          <Link href={"/CartPage"}>
+          <Link href={"/cart"}>
             <button
             className="flex flex-row justify-center items-center gap-3 font-semibold bg-[#D5D3FD] rounded-2xl py-2 w-full text-sm hover:bg-[#c2c0f5] transition-colors lg:text-md">
               <IoBagCheckOutline />

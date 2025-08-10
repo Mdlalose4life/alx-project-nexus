@@ -10,7 +10,7 @@ export default async function handler(
   }
 
   try {
-    const result = await makeApiCall('/product-categories/', {
+    const result = await makeApiCall('/categories/', {
       method: 'GET',
     });
 

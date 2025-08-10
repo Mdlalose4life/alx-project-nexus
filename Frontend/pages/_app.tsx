@@ -1,6 +1,6 @@
 import Layout from "@/components/layouts/Layout";
-import { CartProvider } from "@/store/CartContext";
-import { MenuProvider } from "@/store/MenuContext";
+import { CartProvider } from "@/store/cartContext";
+import { MenuProvider } from "@/store/menuContext";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 

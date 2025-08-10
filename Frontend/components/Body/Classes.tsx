@@ -5,7 +5,7 @@ import { BiCategory } from "react-icons/bi";
 import { FaChevronDown } from "react-icons/fa";
 import { CiShop, CiLocationOn } from "react-icons/ci";
 import { IoIosPricetag } from "react-icons/io";
-import { useMenu } from "@/store/MenuContext";
+import { useMenu } from "@/store/menuContext";
 
 interface ClassesProps {
   setActivePanel: (panel: "left" | "right") => void;

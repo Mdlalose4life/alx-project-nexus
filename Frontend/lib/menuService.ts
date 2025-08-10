@@ -25,7 +25,6 @@ export async function fetchBusinesses(): Promise<MenuItem> {
   if (!res.ok) throw new Error("Failed to fetch shops");
 
   const data = await res.json();
-
   const items = data.results.reduce(
     (acc: Record<string, string>, shop: any, idx: number) => {
       acc[`item${idx + 1}`] = shop.name;
@@ -46,15 +45,14 @@ export async function fetchLocations(): Promise<MenuItem> {
 
   const data = await res.json();
 
-  const provinces = data.results.filter((item: any) => item.type === "Province");
-
-  const items = provinces.reduce(
-    (acc: Record<string, string>, province: any, idx: number) => {
-      acc[`item${idx + 1}`] = province.name;
+    const items = data.results.reduce(
+    (acc: Record<string, string>, businesse: any, idx: number) => {
+      acc[`item${idx + 1}`] = businesse.province;
       return acc;
     },
     {}
-  );
+    );
+    
 
   return {
     name: "Location",

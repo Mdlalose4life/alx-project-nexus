@@ -1,8 +1,8 @@
 
-import { useMenu } from "@/store/MenuContext";
 import HorizintalDevider from "../common/Dividers/Horizontal-devider";
 import { useEffect, useState } from "react";
-import { fetchAllMenus } from "@/lib/menuService";
+import { fetchAllMenus, MenuItem } from "@/lib/menuService";
+import { useMenu } from "@/store/menuContext";
 
 
 // const  TestMenu = [
@@ -121,7 +121,6 @@ const SideNav: React.FC = () => {
             <span className="hover:bg-[#c2c0f5] rounded-full p-2 text-sm w-[150px]">Low to High</span>
           </div>
         </div>
-        <button className=" border-2"onClick={()=>{categories()}}>categories</button>
       </div>
     </aside>
   );
