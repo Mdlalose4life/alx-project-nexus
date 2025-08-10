@@ -1,6 +1,67 @@
 
 import HorizintalDevider from "../common/Dividers/Horizontal-devider";
 import { useEffect, useState } from "react";
+import { fetchAllMenus } from "@/lib/menuService";
+
+
+// const  TestMenu = [
+//   {
+//     name: "Categories",
+//     items: {
+//     item1: "Clothing",
+//     item2: "Kitchen",
+//     item3: "Electronics",
+//     item4: "Beauty & Personal Care",
+//     item5: "Home Appliances",
+//     item6: "Furniture",
+//     item7: "Toys & Games",
+//     item8: "Automotive",
+//     item9: "Books",
+//     item10: "Sports & Outdoors",
+//     item11: "Groceries",
+//     item12: "Health & Wellness",
+//     item13: "Pet Supplies",
+//     item14: "Jewelry",
+//     item15: "Watches",
+//     item16: "Bags & Luggage",
+//     item17: "Baby Products",
+//     item18: "Office Supplies",
+//     item19: "Garden & Tools",
+//     item20: "Musical Instruments",
+//     },
+//   },
+//   {
+//     name: "Shops",
+//     items: {
+//       item1: "Incredible Connection",
+//       item2: "Evetech",
+//       item3: "Loot",
+//       item4: "Kilimall",
+//       item5: "TechSmart",
+//     },
+//   },
+//   {
+//     name: "Location",
+//     items: {
+//       item1: "Johannesburg",
+//       item2: "Cape Town",
+//       item3: "Pretoria",
+//       item4: "Durban",
+//       item5: "Newcastle",
+//     },
+//   },
+//   {
+//     name: "Prices",
+//     items: {
+//       item1: "0 - 2k",
+//       item2: "2k - 4k",
+//       item3: "4k - 6k",
+//     },
+//   },
+// ];
+
+
+import { useEffect, useState } from "react";
 import { fetchAllMenus, MenuItem } from "@/lib/menuService";
 import { useMenu } from "@/store/menuContext";
 
