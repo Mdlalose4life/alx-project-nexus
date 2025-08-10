@@ -70,7 +70,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         ]
     
     @extend_schema_field(serializers.URLField(allow_null=True))
-    def get_primary_image_url(self, obj):
+    def get_primary_image(self, obj):
         primary_image = obj.images.filter(is_primary=True).first()
         if primary_image and primary_image.image:
             return CloudinaryImage(str(primary_image.image)).build_url(
