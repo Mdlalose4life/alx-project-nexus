@@ -37,7 +37,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     notes = models.TextField(blank=True, help_text="Special instructions for this item")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -51,13 +51,19 @@ class CartItem(models.Model):
     
     @property
     def total_price(self):
-        return self.quantity * self.unit_price
+        unit_price = self.unit_price or Decimal('0.00')
+        return self.quantity * unit_price
     
     def save(self, *args, **kwargs):
-        # Save current product price
         if not self.unit_price:
-            self.unit_price = self.product.price
+            product_price = getattr(self.product, 'price', None)
+            if product_price is not None:
+                self.unit_price = product_price
+            else:
+                self.unit_price = Decimal('0.00')
+                raise ValueError(f"Product {self.product.name} has no price set")
         super().save(*args, **kwargs)
+        
 
 class Order(models.Model):
     """Main order model"""
