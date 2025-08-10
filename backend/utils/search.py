@@ -29,7 +29,7 @@ class SearchManager:
             search=search_vector,
             rank=SearchRank(search_vector, search_query)
         ).filter(search=search_query).order_by('-rank')
-    
+
     @staticmethod
     def search_products(query, queryset=None):
         """
@@ -37,14 +37,14 @@ class SearchManager:
         """
         if queryset is None:
             from apps.products.models import Product
-            queryset = Product.objects.filter(status='active')
+            queryset = Product.objects.filter(status='active').select_related('business')
         
         if not query:
             return queryset
         
         search_vector = SearchVector('name', weight='A') + \
-                       SearchVector('description', weight='B') + \
-                       SearchVector('business__name', weight='C')
+                    SearchVector('description', weight='B') + \
+                    SearchVector('business__name', weight='C')
         
         search_query = SearchQuery(query)
         
@@ -52,4 +52,3 @@ class SearchManager:
             search=search_vector,
             rank=SearchRank(search_vector, search_query)
         ).filter(search=search_query).order_by('-rank')
-

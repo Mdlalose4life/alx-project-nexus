@@ -71,6 +71,8 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'django_filters',
     'django_extensions',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 LOCAL_APPS = [
@@ -152,15 +154,6 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
     'SCHEMA_PATH_PREFIX': '/api/v1/',
     
-    # # Authentication
-    # 'SECURITY_DEFINITIONS': {
-    #     'Bearer': {
-    #         'type': 'http',
-    #         'scheme': 'bearer',
-    #         'bearerFormat': 'JWT',
-    #     }
-    # },
-    
     # UI Configuration
     'SWAGGER_UI_SETTINGS': {
         'deepLinking': True,
@@ -172,26 +165,7 @@ SPECTACULAR_SETTINGS = {
         'docExpansion': 'list',
         'filter': True,
     },
-    
-    # # Schema generation
-    # 'PREPROCESSING_HOOKS': [],
-    # 'POSTPROCESSING_HOOKS': [],
-    # 'ENUM_NAME_OVERRIDES': {
-    #     'ValidationErrorEnum': 'drf_spectacular.utils.ValidationErrorEnum.values',
-    # },
-    # 'ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE': False,
-    
-    # # Tags
-    # 'TAGS': [
-    #     {'name': 'Authentication', 'description': 'User authentication and account management'},
-    #     {'name': 'Users', 'description': 'User profile management'},
-    #     {'name': 'Businesses', 'description': 'Business listings and management'},
-    #     {'name': 'Business Categories', 'description': 'Business category management'},
-    #     {'name': 'Products', 'description': 'Product listings and management'},
-    #     {'name': 'Product Categories', 'description': 'Product category management'},
-    # ],
 }
-
 
 # JWT Configuration
 SIMPLE_JWT = {
@@ -226,7 +200,6 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Africa/Johannesburg'
@@ -247,10 +220,54 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    
     "http://localhost:3000",  # React default
     "http://127.0.0.1:3000",
     "http://localhost:8080",  # Vue default
     "http://127.0.0.1:8080",
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# Storage Configuration
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Cloudinary Storage Settings
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
+    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+    'SECURE': True,
+    'MEDIA_TAG': 'media',
+    'INVALID_VIDEO_ERROR_MESSAGE': 'Please upload a valid video file.',
+    'EXCLUDE_DELETE_ORPHANED_MEDIA_PATHS': (),
+    'MAGIC_FILE_PATH': 'magic',
+}
+
+# Configure Cloudinary
+def configure_cloudinary():
+    """Configure Cloudinary after Django settings are loaded"""
+    try:
+        import cloudinary
+        import cloudinary.uploader
+        import cloudinary.api
+        
+        cloudinary.config(
+            cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
+            api_key=config('CLOUDINARY_API_KEY', default=''),
+            api_secret=config('CLOUDINARY_API_SECRET', default=''),
+            timeout=30,
+            secure=True
+        )
+        print("✓ Cloudinary configured successfully")
+    except ImportError:
+        print("✗ Cloudinary not available")
+        pass
+    except Exception as e:
+        print(f"✗ Cloudinary configuration error: {e}")
+        pass
+
+# Call cloudinary configuration
+configure_cloudinary()
+
+if __name__ == "__main__":
+    print("Base settings loaded successfully!")
+    print(f"DEBUG = {globals().get('DEBUG', 'Not set')}")

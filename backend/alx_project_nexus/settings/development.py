@@ -7,10 +7,17 @@ DEBUG = True
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-123')
 
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS', 
-    default='localhost,127.0.0.1,alx-project-nexus-b00y.onrender.com'
-).split(',')
+ALLOWED_HOSTS = ['*']  # Allow all hosts for development
+
+# Debug Toolbar - properly append to INSTALLED_APPS
+INSTALLED_APPS = list(INSTALLED_APPS)  # Convert to mutable list
+INSTALLED_APPS.append('debug_toolbar')
+
+# Add debug toolbar middleware
+MIDDLEWARE = list(MIDDLEWARE)  # Convert to mutable list
+MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+
+INTERNAL_IPS = ['127.0.0.1']
 
 # Database
 DATABASES = {
@@ -24,7 +31,7 @@ DATABASES = {
     }
 }
 
-# SUPABASE
+# SUPABASE (commented out)
 # DATABASES = {
 #     'default': {  
 #         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -40,19 +47,15 @@ DATABASES = {
 #     }
 # }
 
-# CORS settings for development
-CORS_ALLOWED_ORIGINS += [
+# CORS settings for development - properly extend the list
+CORS_ALLOWED_ORIGINS = list(CORS_ALLOWED_ORIGINS)  # Convert to mutable list
+CORS_ALLOWED_ORIGINS.extend([
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-]
+])
 
 # Email backend for development
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Debug Toolbar
-INSTALLED_APPS += ['debug_toolbar']
-MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
-INTERNAL_IPS = ['127.0.0.1']
 
 # Logging
 LOGGING = {
@@ -85,4 +88,4 @@ CACHES = {
 }
 
 # Celery
-CELERY_TASK_ALWAYS_EAGER = True  # Run tasks synchronously in development
+CELERY_TASK_ALWAYS_EAGER = True  

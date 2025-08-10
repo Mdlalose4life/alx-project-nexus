@@ -7,10 +7,16 @@ from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
-from apps.products.models import Product, ProductCategory
+# Cloudinary imports
+from cloudinary.uploader import upload, destroy
+from cloudinary.utils import cloudinary_url
+from cloudinary import CloudinaryImage
+
+from apps.products.models import Product, ProductCategory, ProductImage
 from api.v1.serializers.products import (
     ProductListSerializer, ProductDetailSerializer,
-    ProductCreateSerializer, ProductCategorySerializer
+    ProductCreateSerializer, ProductCategorySerializer,
+    ProductImageSerializer
 )
 
 @extend_schema_view(
@@ -188,6 +194,313 @@ class ProductViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(stock_quantity=0)
         
         return queryset.select_related('business', 'category').prefetch_related('images')
+
+    # ====== CLOUDINARY IMAGE UPLOAD METHODS ======
+    
+    @extend_schema(
+        summary="Upload product images",
+        description="Upload multiple images for a product to Cloudinary (business owner only)",
+        tags=["Products"],
+        request={
+            'type': 'object',
+            'properties': {
+                'images': {
+                    'type': 'array',
+                    'items': {'type': 'string', 'format': 'binary'},
+                    'description': 'Array of image files'
+                },
+                'alt_texts': {
+                    'type': 'array',
+                    'items': {'type': 'string'},
+                    'description': 'Array of alt texts for images (optional)'
+                }
+            },
+            'required': ['images']
+        },
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'},
+                    'images': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'id': {'type': 'integer'},
+                                'url': {'type': 'string'},
+                                'thumbnail_url': {'type': 'string'},
+                                'public_id': {'type': 'string'},
+                                'is_primary': {'type': 'boolean'}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    )
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def upload_images(self, request, slug=None):
+        """Upload multiple images for a product to Cloudinary"""
+        product = self.get_object()
+        
+        # Check permission
+        if product.business.owner != request.user and not request.user.is_staff:
+            return Response(
+                {'error': 'Permission denied'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        uploaded_images = []
+        files = request.FILES.getlist('images')
+        alt_texts = request.data.getlist('alt_texts', [])
+        
+        if not files:
+            return Response(
+                {'error': 'No images provided'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if product has no primary image
+        has_primary = product.images.filter(is_primary=True).exists()
+        
+        for index, file in enumerate(files):
+            try:
+                # Get alt text for this image
+                alt_text = alt_texts[index] if index < len(alt_texts) else ''
+                
+                # Upload to Cloudinary with optimized settings
+                result = upload(
+                    file,
+                    folder=f'products/{product.business.slug}',
+                    public_id=f'{product.slug}_{index + 1}_{product.id}',
+                    overwrite=True,
+                    transformation=[
+                        {'width': 1200, 'height': 900, 'crop': 'limit'},
+                        {'quality': 'auto'},
+                        {'fetch_format': 'auto'}
+                    ],
+                    eager=[
+                        {'width': 300, 'height': 300, 'crop': 'fill', 'gravity': 'center'},
+                        {'width': 150, 'height': 150, 'crop': 'fill', 'gravity': 'center'}
+                    ]
+                )
+                
+                # Create ProductImage instance
+                product_image = ProductImage.objects.create(
+                    product=product,
+                    image=result['public_id'],  # Store Cloudinary public_id
+                    alt_text=alt_text or f'{product.name} - Image {index + 1}',
+                    is_primary=(index == 0 and not has_primary),
+                    sort_order=product.images.count()
+                )
+                
+                # Generate optimized URLs
+                image_url = CloudinaryImage(result['public_id']).build_url(
+                    width=800, height=600, crop='limit', quality='auto', fetch_format='auto'
+                )
+                thumbnail_url = CloudinaryImage(result['public_id']).build_url(
+                    width=200, height=200, crop='fill', gravity='center', quality='auto', fetch_format='auto'
+                )
+                
+                uploaded_images.append({
+                    'id': product_image.id,
+                    'url': image_url,
+                    'thumbnail_url': thumbnail_url,
+                    'public_id': result['public_id'],
+                    'is_primary': product_image.is_primary,
+                    'alt_text': product_image.alt_text
+                })
+                
+            except Exception as e:
+                return Response(
+                    {'error': f'Failed to upload image {index + 1}: {str(e)}'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        return Response({
+            'message': f'Successfully uploaded {len(uploaded_images)} images',
+            'images': uploaded_images
+        })
+    
+    @extend_schema(
+        summary="Delete product image",
+        description="Delete a specific product image from Cloudinary (business owner only)",
+        tags=["Products"],
+        parameters=[
+            OpenApiParameter(
+                name='image_id',
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.PATH,
+                required=True,
+                description='Product image ID'
+            ),
+        ],
+        responses={
+            200: {'type': 'object', 'properties': {'message': {'type': 'string'}}},
+            404: {'type': 'object', 'properties': {'error': {'type': 'string'}}},
+        }
+    )
+    @action(detail=True, methods=['delete'], permission_classes=[permissions.IsAuthenticated])
+    def delete_image(self, request, slug=None):
+        """Delete a specific product image"""
+        product = self.get_object()
+        image_id = request.data.get('image_id')
+        
+        # Check permission
+        if product.business.owner != request.user and not request.user.is_staff:
+            return Response(
+                {'error': 'Permission denied'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if not image_id:
+            return Response(
+                {'error': 'image_id is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            product_image = ProductImage.objects.get(id=image_id, product=product)
+            
+            # Delete from Cloudinary
+            if product_image.image:
+                try:
+                    destroy(str(product_image.image), invalidate=True)
+                except Exception as e:
+                    print(f"Failed to delete from Cloudinary: {e}")
+            
+            # If this was the primary image, set another as primary
+            if product_image.is_primary:
+                next_image = product.images.exclude(id=image_id).first()
+                if next_image:
+                    next_image.is_primary = True
+                    next_image.save()
+            
+            product_image.delete()
+            
+            return Response({'message': 'Image deleted successfully'})
+            
+        except ProductImage.DoesNotExist:
+            return Response(
+                {'error': 'Image not found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+    @extend_schema(
+        summary="Set primary product image",
+        description="Set a specific image as the primary product image (business owner only)",
+        tags=["Products"],
+        request={
+            'type': 'object',
+            'properties': {
+                'image_id': {'type': 'integer', 'description': 'ID of the image to set as primary'}
+            },
+            'required': ['image_id']
+        },
+        responses={
+            200: {'type': 'object', 'properties': {'message': {'type': 'string'}}},
+        }
+    )
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def set_primary_image(self, request, slug=None):
+        """Set primary product image"""
+        product = self.get_object()
+        image_id = request.data.get('image_id')
+        
+        # Check permission
+        if product.business.owner != request.user and not request.user.is_staff:
+            return Response(
+                {'error': 'Permission denied'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if not image_id:
+            return Response(
+                {'error': 'image_id is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Remove primary status from all images
+            product.images.update(is_primary=False)
+            
+            # Set new primary image
+            product_image = ProductImage.objects.get(id=image_id, product=product)
+            product_image.is_primary = True
+            product_image.save()
+            
+            return Response({'message': 'Primary image updated successfully'})
+            
+        except ProductImage.DoesNotExist:
+            return Response(
+                {'error': 'Image not found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+    @extend_schema(
+        summary="Reorder product images",
+        description="Update the sort order of product images (business owner only)",
+        tags=["Products"],
+        request={
+            'type': 'object',
+            'properties': {
+                'image_orders': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'id': {'type': 'integer'},
+                            'sort_order': {'type': 'integer'}
+                        }
+                    }
+                }
+            },
+            'required': ['image_orders']
+        },
+        responses={
+            200: {'type': 'object', 'properties': {'message': {'type': 'string'}}},
+        }
+    )
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def reorder_images(self, request, slug=None):
+        """Reorder product images"""
+        product = self.get_object()
+        image_orders = request.data.get('image_orders', [])
+        
+        # Check permission
+        if product.business.owner != request.user and not request.user.is_staff:
+            return Response(
+                {'error': 'Permission denied'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if not image_orders:
+            return Response(
+                {'error': 'image_orders is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            for order_data in image_orders:
+                image_id = order_data.get('id')
+                sort_order = order_data.get('sort_order')
+                
+                if image_id and sort_order is not None:
+                    ProductImage.objects.filter(
+                        id=image_id, 
+                        product=product
+                    ).update(sort_order=sort_order)
+            
+            return Response({'message': 'Image order updated successfully'})
+            
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to update image order: {str(e)}'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    # ====== EXISTING METHODS ======
     
     @extend_schema(
         summary="Get featured products",
@@ -289,8 +602,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     
-    # UPDATED: This method now handles the new URL pattern
-    # Called when accessing /categories/{slug}/products/
     @extend_schema(
         summary="Get products by category",
         description="Retrieve products filtered by category slug. Access via /categories/{slug}/products/",
@@ -374,7 +685,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             'is_featured': product.is_featured
         })
     
-    # ... (keep all other existing methods like update_stock, analytics, etc.)
     @extend_schema(
         summary="Update product stock",
         description="Update product stock quantity (business owner only)",
