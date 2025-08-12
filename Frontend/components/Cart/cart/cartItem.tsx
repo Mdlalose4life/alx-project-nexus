@@ -8,7 +8,7 @@ const CartItem: React.FC= () => {
         <div className="flex flex-col p-6 bg-[#f1efff] rounded-3xl lg:w-[60%]">
       <div className="flex items-start gap-4">
           <div className="w-30 h-20 rounded-xl overflow-hidden bg-white p-1 flex items-center justify-center">
-          <Image src="images/productE.webp" alt="Alt Text here" width={100} height={90} className="object-contain" />
+          <Image src="/images/productE.webp" alt="Alt Text here" width={100} height={90} className="object-contain" />
         </div>
         <div className="flex-1">
           <h3 className="font-semibold lg:text-lg">LG OLED evo C3 4K Smart TV</h3>
