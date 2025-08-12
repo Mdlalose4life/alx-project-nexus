@@ -14,13 +14,21 @@ from apps.orders.models import (
 class CartItemInline(admin.TabularInline):
     model = CartItem
     extra = 0
-    readonly_fields = ['unit_price', 'total_price', 'created_at', 'updated_at']
-    fields = ['product', 'quantity', 'unit_price', 'total_price', 'notes']
+    readonly_fields = ['unit_price', 'total_price_display', 'created_at', 'updated_at']
+    fields = ['product', 'quantity', 'unit_price', 'total_price_display', 'notes']
+    
+    def total_price_display(self, obj):
+        """Display total price with proper None handling"""
+        try:
+            return f"${obj.total_price:.2f}"
+        except (TypeError, ValueError):
+            return "Price not available"
+    total_price_display.short_description = 'Total Price'
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('product', 'product__business')
-
-
+    
+    
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ['user', 'total_items', 'total_amount', 'businesses_count', 'created_at', 'updated_at']

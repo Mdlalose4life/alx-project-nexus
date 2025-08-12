@@ -15,7 +15,7 @@ ALLOWED_HOSTS = config(
 CSRF_TRUSTED_ORIGINS = [
     'https://alx-project-nexus-b00y.onrender.com',
     'https://*.onrender.com',
-    'http://localhost:8000'  # For local testing
+    'http://localhost:8000'  
 ]
 
 # Fixed CORS_ALLOWED_ORIGINS - remove the duplicate

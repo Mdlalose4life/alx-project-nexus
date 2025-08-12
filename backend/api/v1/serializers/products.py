@@ -2,6 +2,9 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from api.v1.serializers.businesses import BusinessListSerializer
 from apps.products.models import Product, ProductCategory, ProductImage
+from rest_framework import serializers
+from cloudinary import CloudinaryImage
+
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     parent_name = serializers.CharField(source='parent.name', read_only=True)
@@ -11,11 +14,54 @@ class ProductCategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug', 'description', 'parent', 'parent_name', 'icon', 'is_active']
         read_only_fields = ['slug']
 
+
 class ProductImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    thumbnail_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'alt_text', 'is_primary', 'sort_order']
-
+        fields = ['id', 'image', 'image_url', 'thumbnail_url', 'alt_text', 'is_primary', 'sort_order']
+    
+    def get_cloudinary_public_id(self, obj):
+        """Extracts the correct public_id from Cloudinary storage"""
+        if not obj.image:
+            return None
+        
+        public_id = str(obj.image)
+        if '/upload/' in public_id:
+            public_id = public_id.split('/upload/')[-1]
+        public_id = public_id.split('/v1/')[-1]  # Remove version if present
+        return public_id
+    
+    @extend_schema_field(serializers.URLField(allow_null=True))
+    def get_image_url(self, obj):
+        """Get optimized image URL"""
+        public_id = self.get_cloudinary_public_id(obj)
+        if public_id:
+            return CloudinaryImage(public_id).build_url(
+                width=800,
+                height=600,
+                crop='limit',
+                quality='auto',
+                fetch_format='auto'
+            )
+        return None
+    
+    @extend_schema_field(serializers.URLField(allow_null=True))
+    def get_thumbnail_url(self, obj):
+        """Get thumbnail URL"""
+        public_id = self.get_cloudinary_public_id(obj)
+        if public_id:
+            return CloudinaryImage(public_id).build_url(
+                width=300,
+                height=300,
+                crop='fill',
+                gravity='center',
+                quality='auto',
+                fetch_format='auto'
+            )
+        return None
 class ProductListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for product listings"""
     business_name = serializers.CharField(source='business.name', read_only=True)
@@ -37,10 +83,19 @@ class ProductListSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.URLField(allow_null=True))
     def get_primary_image(self, obj):
         primary_image = obj.images.filter(is_primary=True).first()
-        if primary_image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(primary_image.image.url)
+        if primary_image and primary_image.image:
+            public_id = str(primary_image.image)
+            if '/upload/' in public_id:
+                public_id = public_id.split('/upload/')[-1]
+            public_id = public_id.split('/v1/')[-1]
+            
+            return CloudinaryImage(public_id).build_url(
+                width=300,
+                height=300,
+                crop='fill',
+                quality='auto',
+                fetch_format='auto'
+            )
         return None
     
     @extend_schema_field(serializers.IntegerField())
