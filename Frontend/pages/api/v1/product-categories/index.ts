@@ -10,7 +10,7 @@ export default async function handler(
   }
 
   try {
-    const result = await makeApiCall('/product-categories/', {
+    const result = await makeApiCall('/categories/', {
       method: 'GET',
     });
 
@@ -19,7 +19,7 @@ export default async function handler(
     }
 
     res.status(200).json(result.data);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Internal server error' });
   }
 }

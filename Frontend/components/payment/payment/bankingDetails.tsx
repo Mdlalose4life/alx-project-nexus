@@ -1,4 +1,3 @@
-import HorizintalDevider from "@/components/common/Dividers/Horizontal-devider";
 import { useState } from "react";
 import { HiOutlineCreditCard } from "react-icons/hi";
 

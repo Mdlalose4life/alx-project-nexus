@@ -10,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 
 const Home: React.FC = () => {
   const [activePanel, setActivePanel] = useState<"left" | "right"| null>(null)
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const classesRef = useRef<HTMLDivElement>(null);
   const [offsetTop, setOffsetTop] = useState(0);
   const [rightOffset, setRightOffset] = useState(0);
@@ -50,7 +49,6 @@ useEffect(() => {
 
 const closeBackdrop = () => {
   setActivePanel(null);
-  setActiveMenu(null);
   setShowBackdrop(false);
 };
 

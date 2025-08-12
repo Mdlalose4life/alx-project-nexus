@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import Image from "next/image";
 import Link from "next/link";
 
 
@@ -13,32 +13,34 @@ type Product = {
 };
 
 const ProductCard: React.FC<{ products: Product[] }> = ({ products }) => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const allproducts = async () => {
-    const data = await fetch('/api/v1/products'); 
-    if (!data.ok) {
-      throw new Error('Network response was not ok');
-    } 
-    const result = await data.json();
-    console.log("hello data", result);
-    return result;
-    setData()
-  }
-  allproducts();
-  }, [])
+  // useEffect(() => {
+  //   const allproducts = async () => {
+  //   const data = await fetch('/api/v1/products'); 
+  //   if (!data.ok) {
+  //     throw new Error('Network response was not ok');
+  //   } 
+  //   const result = await data.json();
+  //   console.log("hello data", result);
+  //   return result;
+  //   setData()
+  // }
+  // allproducts();
+  // }, [])
 
-  let index = 0; // Assuming you want to start from 0, adjust as needed
+  // let index = 0;
   return (
  
     <section className="w-full">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((product) => (
           <div key={product.id} className="bg-white p-3 h-[300px] shadow rounded-lg duration-300 transform hover:scale-105">
-            <img
+            <Image
               src={product.image}
               alt={product.name}
+              height={60}
+              width={70}
               className="w-full h-[40%] lg:h-[70%] object-cover"
             />
             <h3 className="mt-2 font-semibold text-lg">{product.name}</h3>

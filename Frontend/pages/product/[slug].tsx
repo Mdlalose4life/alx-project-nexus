@@ -2,19 +2,33 @@ import { useRouter } from "next/router";
 import { TestProducts } from "@/constants";
 import ProductDetailsPage from "@/components/product/productDetails";
 
-const ProductPage: React.FC = () => {
-    const router = useRouter();
-    const { slug } = router.query;
+interface ProductDetailsPageProps {
+  TestProduct?: {
+    id: number;
+    slug: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    thumbnails: string[];
+    keyFeatures?: string[];
+  };
+}
 
-    const TestProduct = TestProducts.find((p) => p.slug === slug);
+const ProductPage: React.FC<ProductDetailsPageProps> = () => {
+  const router = useRouter();
+  const { slug } = router.query;
 
-    if (!TestProducts) {
-      return <p className="p-4"> Loading Products...</p>
-    }
-    return (
-        <div className="">
-          <ProductDetailsPage TestProduct={TestProduct}/>
-        </div>
+  const TestProduct = TestProducts.find((p) => p.slug === String(slug));
+
+  if (!TestProduct) {
+    return <p className="p-4">Product not found.</p>;
+  }
+
+  return (
+    <div>
+      <ProductDetailsPage TestProduct={TestProduct} />
+    </div>
   );
 };
 

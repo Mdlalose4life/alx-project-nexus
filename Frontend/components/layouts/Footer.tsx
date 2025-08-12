@@ -1,4 +1,3 @@
-import Link from "next/link";
 import FooterElements from "../Footer/Footer";
 
 const Footer: React.FC = () => {
