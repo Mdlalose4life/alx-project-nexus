@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { PiShoppingCartLight } from "react-icons/pi";
@@ -33,10 +34,12 @@ const Cart: React.FC<CartProp> = ({ activeView, setActiveView }) => {
       {isOpen && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[150px] bg-[#EDECFE] text-black p-3 rounded-xl shadow-xl z-20">
           <div className="flex items-start gap-2 mb-2">
-            <img
+            <Image
               src="/Images/productA.webp"
               alt="Cart Product"
-              className="h-[30px] w-[40px] object-cover rounded"
+              className="object-cover rounded"
+              height={30}
+              width={40}
             />
             <div>
               <h3 className="text-sm lg:text-md font-semibold">LG OLED</h3>

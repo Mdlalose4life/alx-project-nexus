@@ -23,7 +23,7 @@ export default async function handler(
     // res.setHeader('Set-Cookie', `token=${result.data.token}; HttpOnly; Path=/`);
 
     res.status(200).json(result.data);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Internal server error' });
   }
 }

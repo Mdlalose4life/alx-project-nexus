@@ -2,7 +2,6 @@ import HorizintalDevider from "@/components/common/Dividers/Horizontal-devider";
 import Image from "next/image";
 import { useState } from "react";
 import { CiShop } from "react-icons/ci";
-import { PiShoppingCart } from "react-icons/pi";
 import { IoBagCheckOutline } from "react-icons/io5";
 import Link from "next/link";
 
@@ -77,7 +76,7 @@ const ProductDetailsPage: React.FC<TestProductProps> = ({TestProduct}) => {
           <h2 className="font-semibold mb-2">Review</h2>
           <p className="text-sm mb-2">{TestProduct.name}</p>
           <div className="flex justify-center bg-white rounded-4xl text-6xl">
-            <img src="/Images/review.png" alt="Reviews" className="h-[520px]" />
+            <Image src="/Images/review.png" alt="Reviews" width={300} height={520} />
           </div>
             <p className="mt-4 text-gray-500">
              No Review Yet

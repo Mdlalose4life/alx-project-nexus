@@ -1,4 +1,3 @@
-import Link from "next/link";
 import UpperFooter from "./UpperFooter";
 import LowerFooter from "./LowerFooter";
 

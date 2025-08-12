@@ -4,6 +4,7 @@ import More from "./More";
 import Profile from "./Profile";
 import SearchBar from "./SearchBar";
 import Link from "next/link";
+import Image from "next/image";
 
 const MainHeader: React.FC = () => {
   const [activeView, setActiveView] = useState<"Cart" | "Profile" | "More" | null>(null);
@@ -31,7 +32,7 @@ const MainHeader: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/">
           <div className="flex items-center">
-            <img src="/Images/Logo.png" className="w-[100px] lg:w-[120px]" />
+            <Image src="/Images/Logo.png" width={120} height={80} alt="Footer-logo" className="w-[100px] lg:w-[120px]" />
           </div>
         </Link>
 

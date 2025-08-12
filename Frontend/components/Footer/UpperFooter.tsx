@@ -1,10 +1,10 @@
-import FooterElements from "../Footer/Footer";
+import Image from "next/image";
 
 const UpperFooter: React.FC = () => {
   return (
     <div className="flex flex-col">
         <div className="">
-            <img src="Images/Logo.png" alt="Lower Logo" className="w-[100px]"/>
+            <Image src="/Images/Logo.png" alt="Lower Logo" width={100} height={60}/>
         </div>
         <div className="pl-11.5">
             <div className="flex flex-wrap lg:flex-nowrap lg:justify-center text-[#1c3454] text-[12px] lg:text-sm gap-[60px] lg:gap-60">
